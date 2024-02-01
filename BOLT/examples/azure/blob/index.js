@@ -1,6 +1,6 @@
 require("dotenv").config();
 const path = require("path");
-const { azure } = require("../../../index");
+const { azure } = require("../../../providers/index");
 const fs = require("fs");
 
 const main = async () => {
