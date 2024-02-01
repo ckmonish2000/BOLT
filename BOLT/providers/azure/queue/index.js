@@ -24,4 +24,13 @@ const createQueue = async (queueName) => {
   }
 };
 
-module.exports = { createQueue };
+const deleteQueue = async (queueName) => {
+    try {
+      const res = await queueServiceClient.deleteQueue(queueName);
+      return respond(true, "Sucessfully deleted queue", res);
+    } catch (err) {
+      return respond(false, "Failed to delete queue", null, err);
+    }
+  };
+
+module.exports = { createQueue,deleteQueue };

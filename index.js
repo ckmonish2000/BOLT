@@ -8,6 +8,7 @@ const main = async () => {
     // METHOD TO: Create new queue
     const res = await queueClient.createQueue(queueName)
     // METHOD TO: Delete queue
+    const delRes = await queueClient.deleteQueue(queueName)
 };
 
 main();
