@@ -1,18 +1,19 @@
 require("dotenv").config();
 const path = require("path");
-const { azure } = require("../../../providers/index");
+const BOLT = require("../../../index")("azure")
+const storageClient = BOLT.storage
 const fs = require("fs");
 
 const main = async () => {
   // METHOD TO: Create storage container
-  const container = await azure.blob.createContainer("myfirstcontainer");
+  const container = await storageClient.createContainer("myfirstcontainer");
 
   // METHOD TO: List all storage container
-  const conatiners = await azure.blob.listAllConatiners();
+  const conatiners = await storageClient.listAllConatiners();
   
   // METHOD TO: Upload stream of blob to container
   const fileStream = await fs.createReadStream(path.join(__dirname,"./test.txt"));
-  const uploadStreamRes = await azure.blob.upload(
+  const uploadStreamRes = await storageClient.upload(
     "myfirstcontainer",
     "f5.txt",
     fileStream
@@ -20,17 +21,17 @@ const main = async () => {
 
   // METHOD TO: Upload buffer or string to container
   const buffer = await fs.readFileSync(path.join(__dirname,"./test.txt"));
-  const uploadBufferRes = await azure.blob.upload(
+  const uploadBufferRes = await storageClient.upload(
     "myfirstcontainer",
     "buffer.txt",
     buffer
   );
 
   // METHOD TO: Get presigned blob URL
-  const url = await azure.blob.getUrl("myfirstcontainer", "f5.txt");
+  const url = await storageClient.getUrl("myfirstcontainer", "f5.txt");
   
   // METHOD TO: Get readable stream for a blob
-  const fileReadStream = await azure.blob.get("myfirstcontainer", "f5.txt");
+  const fileReadStream = await storageClient.get("myfirstcontainer", "f5.txt");
   const downloaded = await streamToBuffer(fileReadStream);
   console.log("Downloaded blob content:", downloaded.toString());
 };
