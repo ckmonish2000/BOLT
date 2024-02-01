@@ -78,32 +78,52 @@ const upload = async (containerName, fileName, file) => {
 };
 
 const getUrl = async (containerName, fileName) => {
-  const containerClient = blobServiceClient.getContainerClient(containerName);
-  const blobClient = containerClient.getBlobBatchClient(fileName);
-  const expiryTime = new Date();
-  expiryTime.setHours(expiryTime.getHours() + 1);
-  const permissions = BlobSASPermissions.parse("r");
-  const sasToken = generateBlobSASQueryParameters(
-    {
-      containerName: containerClient.containerName,
-      blobName: blobClient.blobName,
-      permissions: permissions,
-      startsOn: new Date(),
-      expiresOn: expiryTime,
-    },
-    blobServiceClient.credential
-  ).toString();
+  try {
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blobClient = containerClient.getBlobBatchClient(fileName);
+    const expiryTime = new Date();
+    expiryTime.setHours(expiryTime.getHours() + 1);
+    const permissions = BlobSASPermissions.parse("r");
+    const sasToken = generateBlobSASQueryParameters(
+      {
+        containerName: containerClient.containerName,
+        blobName: blobClient.blobName,
+        permissions: permissions,
+        startsOn: new Date(),
+        expiresOn: expiryTime,
+      },
+      blobServiceClient.credential
+    ).toString();
 
-  const blobServiceUrl = `https://${account}.blob.core.windows.net`;
-  const containerUrl = `${blobServiceUrl}/${containerName}`;
-  return `${containerUrl}/${fileName}?${sasToken}`;
+    const blobServiceUrl = `https://${account}.blob.core.windows.net`;
+    const containerUrl = `${blobServiceUrl}/${containerName}`;
+    const url = `${containerUrl}/${fileName}?${sasToken}`;
+    return respond(true, "Successfully generate presigned URL", url);
+  } catch (err) {
+    return respond(false, "Failed to generate presigned URL", null, err);
+  }
 };
 
 const get = async (containerName, fileName) => {
-  const containerClient = blobServiceClient.getContainerClient(containerName);
-  const blobClient = containerClient.getBlobClient(fileName);
-  const file = await blobClient.download();
-  return file.readableStreamBody;
+  try {
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blobClient = containerClient.getBlobClient(fileName);
+    const file = await blobClient.download();
+    return respond(true, "Successfully fetched file", file.readableStreamBody);
+  } catch (err) {
+    respond(false, "Failed to fetch file", null, err);
+  }
+};
+
+const remove = async (containerName, fileName) => {
+  try {
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blobClient = containerClient.getBlobClient(fileName);
+    const res = await blobClient.deleteIfExists();
+    return respond(true, "Successfully deleted file", res);
+  } catch (err) {
+    return respond(false, "Failed to delete file", null, err);
+  }
 };
 
 module.exports = {
@@ -113,4 +133,5 @@ module.exports = {
   upload,
   getUrl,
   get,
+  remove,
 };
