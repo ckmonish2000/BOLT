@@ -7,6 +7,8 @@ const main = async () => {
     const queueName = "myfirstqueue";
     // METHOD TO: Create new queue
     const res = await queueClient.createQueue(queueName)
+    // METHOD TO: Fetch all queues
+    const queues = await queueClient.listAllQueues()
     // METHOD TO: Delete queue
     const delRes = await queueClient.deleteQueue(queueName)
 };

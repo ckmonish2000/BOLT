@@ -25,12 +25,25 @@ const createQueue = async (queueName) => {
 };
 
 const deleteQueue = async (queueName) => {
-    try {
-      const res = await queueServiceClient.deleteQueue(queueName);
-      return respond(true, "Sucessfully deleted queue", res);
-    } catch (err) {
-      return respond(false, "Failed to delete queue", null, err);
-    }
-  };
+  try {
+    const res = await queueServiceClient.deleteQueue(queueName);
+    return respond(true, "Sucessfully deleted queue", res);
+  } catch (err) {
+    return respond(false, "Failed to delete queue", null, err);
+  }
+};
 
-module.exports = { createQueue,deleteQueue };
+const listAllQueues = async () => {
+  try {
+    const allQueues = [];
+    let queues = queueServiceClient.listQueues();
+    for await (const queue of queues) {
+      allQueues.push(queue);
+    }
+    return respond(true, "Successfully fetched list of all queues", allQueues);
+  } catch (err) {
+    return respond(true, "Failed to fetch list of queues", null, err);
+  }
+};
+
+module.exports = { createQueue, deleteQueue, listAllQueues };
