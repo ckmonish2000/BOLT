@@ -42,6 +42,15 @@ const listAllConatiners = async () => {
   }
 };
 
+const deleteContainer = async (containerName) => {
+  try {
+    const res = await blobServiceClient.deleteContainer(containerName);
+    return respond(true, "Successfully deleted container", res);
+  } catch (err) {
+    return respond(false, "Failed to delete container", null, err);
+  }
+};
+
 const upload = async (containerName, fileName, file) => {
   try {
     let res;
@@ -97,4 +106,11 @@ const get = async (containerName, fileName) => {
   return file.readableStreamBody;
 };
 
-module.exports = { createContainer, listAllConatiners, upload, getUrl, get };
+module.exports = {
+  createContainer,
+  listAllConatiners,
+  deleteContainer,
+  upload,
+  getUrl,
+  get,
+};
