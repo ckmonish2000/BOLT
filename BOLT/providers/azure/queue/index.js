@@ -46,4 +46,20 @@ const listAllQueues = async () => {
   }
 };
 
-module.exports = { createQueue, deleteQueue, listAllQueues };
+const sendMessage = async (queueName, msg) => {
+  const queueClient = await queueServiceClient.getQueueClient(queueName);
+  return await queueClient.sendMessage(JSON.stringify(msg));
+};
+
+const getMessages = async (queueName) => {
+  const queueClient = await queueServiceClient.getQueueClient(queueName);
+  console.log(await queueClient.receiveMessages());
+};
+
+module.exports = {
+  createQueue,
+  deleteQueue,
+  listAllQueues,
+  sendMessage,
+  getMessages,
+};
