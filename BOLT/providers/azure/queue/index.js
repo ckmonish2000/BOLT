@@ -1,65 +1,54 @@
-const AzureStorageQueue = require("@azure/storage-queue");
 const {
-  QueueServiceClient,
-  StorageSharedKeyCredential,
-} = require("@azure/storage-queue");
-const config = require("../../../config");
+  ServiceBusClient,
+  delay,
+  ServiceBusMessage,
+} = require("@azure/service-bus");
 const respond = require("../../../utils/respond");
 
-const account = config.azure.storage.accountName;
-const accountKey = config.azure.storage.accountKey;
-
-const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
-const queueServiceClient = new QueueServiceClient(
-  `https://${account}.queue.core.windows.net`,
-  sharedKeyCredential
+const sbClient = new ServiceBusClient(
+  process.env.BOLt_AZURE_QUEUE_CONNECTION_STRING
 );
 
-const createQueue = async (queueName) => {
+const sendMessage = async (queueName, messages = []) => {
+  const sender = sbClient.createSender(queueName);
   try {
-    const res = await queueServiceClient.createQueue(queueName);
-    return respond(true, "Sucessfully created queue", res);
-  } catch (err) {
-    return respond(false, "Failed to create queue", null, err);
-  }
-};
-
-const deleteQueue = async (queueName) => {
-  try {
-    const res = await queueServiceClient.deleteQueue(queueName);
-    return respond(true, "Sucessfully deleted queue", res);
-  } catch (err) {
-    return respond(false, "Failed to delete queue", null, err);
-  }
-};
-
-const listAllQueues = async () => {
-  try {
-    const allQueues = [];
-    let queues = queueServiceClient.listQueues();
-    for await (const queue of queues) {
-      allQueues.push(queue);
+    let batch = await sender.createMessageBatch();
+    for (let i = 0; i < messages.length; i++) {
+      if (!batch.tryAddMessage(messages[i])) {
+        await sender.sendMessages(batch);
+        batch = await sender.createMessageBatch();
+        if (!batch.tryAddMessage(messages[i])) {
+          throw new Error("Message too big to fit in a batch");
+        }
+      }
     }
-    return respond(true, "Successfully fetched list of all queues", allQueues);
+    await sender.sendMessages(batch);
+
+    console.log(`Sent a batch of messages to the queue: ${queueName}`);
+
+    // Close the sender
+    await sender.close();
+    return respond(true, `Successfully sent message to ${queueName}`);
   } catch (err) {
-    return respond(true, "Failed to fetch list of queues", null, err);
+    await sbClient.close();
+    return respond(false, `Failed to send message to ${queueName}`, null, err);
+  } finally {
+    await sbClient.close();
   }
 };
 
-const sendMessage = async (queueName, msg) => {
-  const queueClient = await queueServiceClient.getQueueClient(queueName);
-  return await queueClient.sendMessage(JSON.stringify(msg));
+const getMessages = async (queueName, onMessage, onError, ms = 20000) => {
+  const receiver = sbClient.createReceiver(queueName);
+
+  receiver.subscribe({
+    processMessage: onMessage,
+    processError: onError,
+  });
+
+  await delay(ms);
+
+  await receiver.close();
+  await sbClient.close();
 };
 
-const getMessages = async (queueName) => {
-  const queueClient = await queueServiceClient.getQueueClient(queueName);
-  console.log(await queueClient.receiveMessages());
-};
-
-module.exports = {
-  createQueue,
-  deleteQueue,
-  listAllQueues,
-  sendMessage,
-  getMessages,
-};
+module.exports = { sendMessage, getMessages };
