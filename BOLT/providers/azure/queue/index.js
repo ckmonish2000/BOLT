@@ -2,6 +2,7 @@ const { ServiceBusClient } = require("@azure/service-bus");
 const sendMessage = require("./send-message");
 const getMessages = require("./get-message");
 const createQueue = require("./create-queue");
+const deleteQueue = require("./delete-queue");
 
 module.exports = () => {
   const sbClient = new ServiceBusClient(
@@ -11,5 +12,6 @@ module.exports = () => {
     sendMessage: sendMessage(sbClient),
     getMessages: getMessages(sbClient),
     createQueue: createQueue,
+    deleteQueue: deleteQueue,
   };
 };

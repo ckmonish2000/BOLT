@@ -4,7 +4,8 @@ const R = require("ramda");
 const queueClient = BOLT.queue();
 
 const main = async () => {
-    queueClient.createQueue()
+    // queueClient.createQueue()
+    queueClient.deleteQueue()
 };
 
 main();
