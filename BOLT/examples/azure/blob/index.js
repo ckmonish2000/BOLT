@@ -1,7 +1,7 @@
 require("dotenv").config();
 const path = require("path");
 const BOLT = require("../../../index")("azure");
-const storageClient = BOLT.storage;
+const storageClient = BOLT.storage();
 const fs = require("fs");
 
 const main = async () => {
