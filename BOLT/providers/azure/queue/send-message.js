@@ -1,7 +1,7 @@
-const sbClient = require("./client");
 const respond = require("../../../utils/respond");
+const R = require("ramda")
 
-const sendMessage = async (queueName, messages = []) => {
+const sendMessage = async (sbClient,queueName, messages = []) => {
   const sender = sbClient.createSender(queueName);
   try {
     let batch = await sender.createMessageBatch();
@@ -29,4 +29,4 @@ const sendMessage = async (queueName, messages = []) => {
   }
 };
 
-module.exports = sendMessage;
+module.exports = R.curry(sendMessage);

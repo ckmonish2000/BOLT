@@ -1,7 +1,13 @@
-const sbClient = require("./client");
 const { delay } = require("@azure/service-bus");
+const R = require("ramda");
 
-const getMessages = async (queueName, onMessage, onError, ms = 20000) => {
+const getMessages = async (
+  sbClient,
+  queueName,
+  onMessage,
+  onError,
+  ms = 20000
+) => {
   const receiver = sbClient.createReceiver(queueName);
 
   receiver.subscribe({
@@ -15,4 +21,4 @@ const getMessages = async (queueName, onMessage, onError, ms = 20000) => {
   await sbClient.close();
 };
 
-module.exports = getMessages;
+module.exports = R.curry(getMessages);
