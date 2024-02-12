@@ -14,6 +14,10 @@ const remove = require("./remove-file");
 module.exports = () => {
   const account = config.azure.storage.accountName;
   const accountKey = config.azure.storage.accountKey;
+
+  if (!account && !accountKey)
+    throw new Error("Please setup your blob account key and account name");
+
   const sharedKeyCredential = new StorageSharedKeyCredential(
     account,
     accountKey

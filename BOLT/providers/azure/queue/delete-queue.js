@@ -1,27 +1,13 @@
 const R = require("ramda");
-const { ServiceBusManagementClient } = require("@azure/arm-servicebus");
-const {
-  DefaultAzureCredential,
-  ClientSecretCredential,
-} = require("@azure/identity");
+const respond = require("../../../utils/respond");
 
-const deleteQueue = async () => {
-  const subscriptionId = "effac336-c2de-4be4-94b5-896716f49834";
-  const client = new ServiceBusManagementClient(
-    new DefaultAzureCredential(),
-    subscriptionId
-  );
-
-  await client.queues.delete(
-    "db",
-    "mcktryout",
-    "myNewQueue",
-    {},
-    {
-      onResponse: (res) => {
-        console.log(res, "res");
-      },
-    }
-  );
+const deleteQueue = async (client, resourceGroup, nameSpace, queueName) => {
+  try {
+    const res = await client.queues.delete(resourceGroup, nameSpace, queueName);
+    return respond(true, "Successfully deleted queue", res);
+  } catch (err) {
+    respond(false, "Successfully deleted queue", null, err);
+  }
 };
-module.exports = deleteQueue;
+
+module.exports = R.curry(deleteQueue);

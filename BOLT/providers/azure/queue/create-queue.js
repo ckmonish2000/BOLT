@@ -1,27 +1,24 @@
 const R = require("ramda");
-const { ServiceBusManagementClient } = require("@azure/arm-servicebus");
-const {
-  DefaultAzureCredential,
-  ClientSecretCredential,
-} = require("@azure/identity");
+const respond = require("../../../utils/respond");
 
-const createQueue = async () => {
-  const subscriptionId = "effac336-c2de-4be4-94b5-896716f49834";
-  const client = new ServiceBusManagementClient(
-    new DefaultAzureCredential(),
-    subscriptionId
-  );
-
-  await client.queues.createOrUpdate(
-    "db",
-    "mcktryout",
-    "myNewQueue",
-    {},
-    {
-      onResponse: (res) => {
-        console.log(res, "res");
-      },
+const createQueue = async (client, resourceGroup, nameSpace, queueName,parameters={}) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      await client.queues.createOrUpdate(
+        resourceGroup,
+        nameSpace,
+        queueName,
+        parameters,
+        {
+          onResponse: (res) =>
+            resolve(respond(true, "Successfully create your queue", res)),
+        }
+      );
+    } catch (err) {
+      reject(
+        respond(false, "Something went wrong while creating queue", null, err)
+      );
     }
-  );
-};
-module.exports = createQueue;
+  });
+
+module.exports = R.curry(createQueue);
