@@ -8,10 +8,20 @@ const main = async () => {
   const nameSpace = "mcktryout";
   const queueName = "myNewQueue";
 
-//   const newQueue = await queueClient.createQueue(resourceGroup, nameSpace, queueName);
-//   console.log(newQueue)
-//   console.log(await queueClient.deleteQueue(resourceGroup, nameSpace, queueName))
-console.log(queueClient)
+  // METHOD TO: create new queue
+  const newQueue = await queueClient.createQueue(
+    resourceGroup,
+    nameSpace,
+    queueName
+  );
+
+  // METHOD TO: delete a queue
+
+  const delRes = await queueClient.deleteQueue(
+    resourceGroup,
+    nameSpace,
+    queueName
+  );
 };
 
 main();

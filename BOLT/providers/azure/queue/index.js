@@ -5,14 +5,15 @@ const sendMessage = require("./send-message");
 const getMessages = require("./get-message");
 const createQueue = require("./create-queue");
 const deleteQueue = require("./delete-queue");
+const config = require("../../../config");
 
 module.exports = () => {
   let methods = {};
-  const queueConnectionString = process.env.BOLT_AZURE_QUEUE_CONNECTION_STRING;
-  const tenantId = process.env.BOLT_AZURE_ENTRA_APP_TENANT_ID;
-  const clientId = process.env.BOLT_AZURE_ENTRA_APP_CLIENT_ID;
-  const clientSecret = process.env.BOLT_AZURE_ENTRA_APP_CLIENT_SECRET;
-  const subscriptionId = process.env.BOLT_AZURE_SUBSCRIPTION_ID;
+  const queueConnectionString = config.azure.queue.queueConnectionString;
+  const tenantId = config.azure.app.tenantId;
+  const clientId = config.azure.app.clientId;
+  const clientSecret = config.azure.app.clientSecret;
+  const subscriptionId = config.azure.subscriptionId;
 
   if (queueConnectionString) {
     const sbClient = new ServiceBusClient(queueConnectionString);
