@@ -1,9 +1,9 @@
 require("dotenv").config();
-const BOLT = require("./BOLT")("azure");
+const BOLT = require("../../..")("azure");
 const R = require("ramda");
-const queueClient = BOLT.queue();
 
 const main = async () => {
+  const queueClient = BOLT.queue();
   const resourceGroup = "db";
   const nameSpace = "mcktryout";
   const queueName = "myNewQueue";

@@ -6,6 +6,12 @@ To begin using blob storage you need to setup the following keys in your environ
 BOLT_AZURE_STORAGE_ACCOUNT_NAME={YOUR_AZURE_STORAGE_ACCOUNT_NAME}
 BOLT_AZURE_STORAGE_KEY={YOUR_AZURE_STORAGE_KEY}
 ```
+## Create storage client
+
+```javascript
+    const BOLT = require("../../../index")("azure");
+    const storageClient = BOLT.storage();
+```
 
 ## Create storage container
 ```javascript
