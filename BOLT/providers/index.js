@@ -1,3 +1,3 @@
 const azure = require("./azure");
-
-module.exports = { azure };
+const aws = require("./aws");
+module.exports = { azure, aws };

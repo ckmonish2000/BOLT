@@ -1,6 +1,7 @@
-const { azure } = require("../../providers");
+const { azure, aws } = require("../../providers");
 const R = require("ramda");
 const azureStorageClient = azure.blob;
+const awsStorageClient = aws.s3;
 
 const toLowerCase = R.toLower;
 const invalidProvider = () => {
@@ -9,6 +10,7 @@ const invalidProvider = () => {
 
 const createStorageClient = R.cond([
   [R.pipe(toLowerCase, R.equals("azure")), R.always(azureStorageClient)],
+  [R.pipe(toLowerCase, R.equals("aws")), R.always(awsStorageClient)],
   [R.T, R.always(invalidProvider)],
 ]);
 
