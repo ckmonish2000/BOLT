@@ -1,3 +1,2 @@
-const azure = require("./providers/azure");
-
-module.exports = { azure };
+const BOLT = require("./lib");
+module.exports = BOLT;
