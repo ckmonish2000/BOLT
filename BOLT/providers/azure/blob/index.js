@@ -10,6 +10,7 @@ const upload = require("./upload-file");
 const getUrl = require("./get-download-url");
 const get = require("./get-file");
 const remove = require("./remove-file");
+const getPreSignedUrl = require("./get-presigned-url");
 
 module.exports = () => {
   const account = config.azure.storage.accountName;
@@ -27,6 +28,8 @@ module.exports = () => {
     sharedKeyCredential
   );
 
+  blobServiceClient.generateAccountSasUrl
+
   return {
     createContainer: createContainer(blobServiceClient),
     listAllConatiners: listAllConatiners(blobServiceClient),
@@ -35,5 +38,6 @@ module.exports = () => {
     getUrl: getUrl(blobServiceClient),
     get: get(blobServiceClient),
     remove: remove(blobServiceClient),
+    getPreSignedUrl: getPreSignedUrl(blobServiceClient),
   };
 };
